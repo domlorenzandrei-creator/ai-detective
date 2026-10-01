@@ -30,6 +30,14 @@ class Claim:
 
 
 @dataclass(frozen=True)
+class Sighting:
+    witness_id: str
+    seen_id: str
+    room: str
+    minute: int
+
+
+@dataclass(frozen=True)
 class Case:
     seed: int
     victim: str
@@ -43,3 +51,4 @@ class Case:
     killer_id: str
     access_log: tuple
     level: str
+    sightings: dict
