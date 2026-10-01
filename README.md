@@ -107,7 +107,7 @@ The tests check invariants across 50 seeds rather than single examples: the same
 
 - [ ] Difficulty levels (more suspects, more decoys, smaller query budget)
 - [ ] Suspects who also claim who they saw, so alibis can be cross-referenced
-- [ ] TF-IDF ranking for notebook search
+- [x] TF-IDF ranking for notebook search
 - [ ] GitHub Actions to run tests on every push
 - [ ] FastAPI wrapper around `Game`
 
