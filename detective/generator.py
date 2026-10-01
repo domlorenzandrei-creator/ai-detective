@@ -1,7 +1,7 @@
 import random
 
 from .difficulty import LEVELS
-from .models import Case, Claim, Evidence, Suspect, fmt_time
+from .models import Case, Claim, Evidence, Sighting, Suspect, fmt_time
 
 FIRST_NAMES = ["Eleanor", "Victor", "Marcus", "Iris", "Julian", "Nora", "Felix", "Clara", "Otis"]
 LAST_NAMES = ["Blackwood", "Hale", "Ashford", "Crane", "Voss", "Lark", "Pryce", "Thorne", "Quill"]
@@ -77,10 +77,24 @@ def generate_case(seed: int, level: str = "normal") -> Case:
                  rng.choice(rooms)),
     )
 
+    liars = {killer.id, red_herring.id}
+    sightings = {}
+    for s in suspects:
+        others = [o for o in suspects if o.id != s.id]
+        if s.id in liars:
+            target = rng.choice(others)
+            sightings[s.id] = Sighting(s.id, target.id, claims[s.id].room, murder_minute)
+        else:
+            neighbours = [o for o in others if true_room[o.id] == true_room[s.id]]
+            if neighbours:
+                target = rng.choice(neighbours)
+                sightings[s.id] = Sighting(s.id, target.id, true_room[s.id], murder_minute)
+
     return Case(
         seed=seed, victim=victim, crime_room=crime_room, weapon=weapon,
         murder_minute=murder_minute, rooms=rooms, suspects=suspects,
         evidence=evidence, claims=claims, killer_id=killer.id,
         access_log=tuple(log),
         level=level,
+        sightings=sightings,
     )

@@ -41,7 +41,9 @@ class Game:
 
     def interview(self, suspect_id, use_ai=True):
         s = self.suspect(suspect_id)
-        text = render_statement(s, self.case.claims[suspect_id], use_ai)
+        sighting = self.case.sightings.get(suspect_id)
+        seen_name = self.suspect(sighting.seen_id).name if sighting else None
+        text = render_statement(s, self.case.claims[suspect_id], use_ai, sighting, seen_name)
         self.statements[suspect_id] = text
         self._note(f"stmt:{suspect_id}", f"{s.name} said: {text}")
         return text
@@ -62,6 +64,24 @@ class Game:
                    f"Log check: {name} was actually in the {actual}. Claimed {claim.room}. "
                    f"{'Contradiction.' if lied else 'Consistent.'}")
         return lied, actual
+
+    def cross_check(self):
+        conflicts = []
+        for witness_id, sighting in self.case.sightings.items():
+            if witness_id not in self.statements:
+                continue
+            if sighting.seen_id not in self.statements:
+                continue
+            their_claim = self.case.claims[sighting.seen_id]
+            if their_claim.room == sighting.room:
+                continue
+            witness = self.suspect(witness_id).name
+            seen = self.suspect(sighting.seen_id).name
+            text = (f"{witness} says they saw {seen} in the {sighting.room}, "
+                    f"but {seen} claims to have been in the {their_claim.room}.")
+            self._note(f"conflict:{witness_id}", text)
+            conflicts.append(text)
+        return conflicts
 
     def accuse(self, suspect_id):
         s = self.suspect(suspect_id)
