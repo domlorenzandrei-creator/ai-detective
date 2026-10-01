@@ -27,6 +27,7 @@ source .venv/bin/activate        # Windows PowerShell: .venv\Scripts\activate
 pip install -r requirements.txt
 
 python main.py --seed 42 --no-ai
+python main.py --seed 42 --level hard --no-ai   # easy | normal | hard
 ```
 
 | Flag | Effect |
@@ -34,6 +35,7 @@ python main.py --seed 42 --no-ai
 | `--seed N` | Replay the same case every time. Omit for a random case. |
 | `--no-ai` | Use plain statements, no API key needed. |
 | `--load` | Resume the game saved in `saves/game.json`. |
+| `--level` | `easy`, `normal` or `hard`. Changes suspect count and query budget. |
 
 ## How to play
 
@@ -105,7 +107,7 @@ The tests check invariants across 50 seeds rather than single examples: the same
 
 ## Roadmap
 
-- [ ] Difficulty levels (more suspects, more decoys, smaller query budget)
+- [x] Difficulty levels (more suspects, smaller query budget)
 - [ ] Suspects who also claim who they saw, so alibis can be cross-referenced
 - [x] TF-IDF ranking for notebook search
 - [ ] GitHub Actions to run tests on every push
