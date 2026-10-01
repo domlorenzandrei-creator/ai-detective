@@ -1,5 +1,6 @@
 import random
 
+from .difficulty import LEVELS
 from .models import Case, Claim, Evidence, Suspect, fmt_time
 
 FIRST_NAMES = ["Eleanor", "Victor", "Marcus", "Iris", "Julian", "Nora", "Felix", "Clara", "Otis"]
@@ -12,10 +13,14 @@ SECRETS = ["an affair", "a gambling debt", "a forged signature",
            "a secret meeting", "stolen jewelry", "a hidden will"]
 
 
-def generate_case(seed: int) -> Case:
+def generate_case(seed: int, level: str = "normal") -> Case:
+    if level not in LEVELS:
+        raise ValueError(f"Unknown level: {level}")
+    n = LEVELS[level].suspects
     rng = random.Random(seed)
+   
 
-    names = [f"{f} {l}" for f, l in zip(rng.sample(FIRST_NAMES, 6), rng.sample(LAST_NAMES, 6))]
+    names = [f"{f} {l}" for f, l in zip(rng.sample(FIRST_NAMES, n + 1), rng.sample(LAST_NAMES, n + 1))]
     victim, *suspect_names = names
 
     suspects = tuple(
@@ -27,7 +32,7 @@ def generate_case(seed: int) -> Case:
             secret=secret,
         )
         for i, (name, role, secret) in enumerate(
-            zip(suspect_names, rng.sample(ROLES, 5), rng.sample(SECRETS, 5))
+            zip(suspect_names, rng.sample(ROLES, n), rng.sample(SECRETS, n))
         )
     )
 
@@ -77,4 +82,5 @@ def generate_case(seed: int) -> Case:
         murder_minute=murder_minute, rooms=rooms, suspects=suspects,
         evidence=evidence, claims=claims, killer_id=killer.id,
         access_log=tuple(log),
+        level=level,
     )

@@ -42,3 +42,4 @@ class Case:
     claims: dict
     killer_id: str
     access_log: tuple
+    level: str

@@ -3,6 +3,7 @@ import json
 import random
 from pathlib import Path
 
+from detective.difficulty import LEVELS
 from detective.engine import Game, GameError
 from detective.generator import generate_case
 from detective.models import fmt_time
@@ -104,15 +105,16 @@ def main():
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--load", action="store_true")
     parser.add_argument("--no-ai", action="store_true")
+    parser.add_argument("--level", choices=list(LEVELS), default="normal")
     args = parser.parse_args()
 
     if args.load:
         game = Game.from_dict(json.loads(SAVE_PATH.read_text()))
     else:
         seed = args.seed if args.seed is not None else random.randrange(10**6)
-        case = generate_case(seed)
+        case = generate_case(seed, args.level)
         game = Game(case, LogStore(case.access_log))
-        print(f"Case #{seed}")
+        print(f"Case #{seed} ({args.level})")
     intro(game)
 
     while True:

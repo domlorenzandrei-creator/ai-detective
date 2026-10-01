@@ -1,23 +1,22 @@
 from .dialogue import render_statement
+from .difficulty import LEVELS
 from .generator import generate_case
 from .search import SearchIndex
 from .store import LogStore
-
 
 class GameError(Exception):
     pass
 
 
 class Game:
-    START_QUERIES = 6
-
+    
     def __init__(self, case, store):
         self.case = case
         self.store = store
         self.found = set()
         self.caught = set()
         self.statements = {}
-        self.queries_left = self.START_QUERIES
+        self.queries_left = LEVELS[case.level].queries
         self.notebook = SearchIndex()
 
     def suspect(self, suspect_id):
@@ -75,6 +74,7 @@ class Game:
     def to_dict(self):
         return {
             "seed": self.case.seed,
+            "level": self.case.level,
             "found": sorted(self.found),
             "caught": sorted(self.caught),
             "statements": self.statements,
@@ -83,7 +83,7 @@ class Game:
 
     @classmethod
     def from_dict(cls, data):
-        case = generate_case(data["seed"])
+        case = generate_case(data["seed"], data.get("level", "normal"))
         game = cls(case, LogStore(case.access_log))
         game.found = set(data["found"])
         game.caught = set(data["caught"])
