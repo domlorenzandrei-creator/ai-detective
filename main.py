@@ -17,10 +17,13 @@ HELP = """Commands:
   search <room>         search a room for evidence
   talk <name>           interview a suspect
   check <name>          check their alibi against the logs (costs a query)
+  conflicts             compare what suspects said about each other (free)
   logs <name>           full keycard history (costs a query)
   notes <words>         search your notebook
   accuse <name>         make your accusation
   save / quit"""
+ 
+    
 
 
 def find_suspect(game, text):
@@ -87,6 +90,12 @@ def handle(game, cmd, arg, use_ai):
             print("Nothing in your notes matches.")
         for _, text in results:
             print(f"  * {text}")
+    elif cmd == "conflicts":
+        found = game.cross_check()
+        if not found:
+            print("No conflicting statements yet. Interview more suspects.")
+        for line in found:
+            print(f"  ! {line}")
     elif cmd == "accuse":
         correct, verdict = game.accuse(find_suspect(game, arg).id)
         print(verdict)
